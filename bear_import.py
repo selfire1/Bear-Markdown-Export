@@ -18,7 +18,7 @@ github/rovest, rorves@twitter
 * Or for import of nested groups and sheets from Ulysses, images and keywords included.
 '''
 
-my_sync_service = 'Dropbox'  # Change 'Dropbox' to 'Box', 'Onedrive',
+my_sync_service = 'Desktop'  # Change 'Dropbox' to 'Box', 'Onedrive',
     # or whatever folder of sync service you need.
     # Your user "Home" folder is added below.
 
