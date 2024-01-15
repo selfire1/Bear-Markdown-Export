@@ -22,7 +22,6 @@ my_sync_service = 'Desktop'  # Change 'Dropbox' to 'Box', 'Onedrive',
     # or whatever folder of sync service you need.
     # Your user "Home" folder is added below.
 
-use_filename_as_title = False  # Set to `True` if importing Simplenotes synced with nvALT.
 set_logging_on = True
 
 # This tag is added for convenience (easy deletion of imported notes they are not wanted.)
@@ -101,14 +100,11 @@ def import_external_files():
                     time.sleep(0.5)
                     move_import_to_done(bundle, import_path, import_done)
                 else:
-                    title = ''
                     # No images, import markdown only even if textbundle:
                     if '.textbundle/' in md_file:
                         file_bundle = os.path.split(md_file)[0]
                     else:
                         file_bundle = md_file
-                        if use_filename_as_title:
-                            title = os.path.splitext(os.path.split(md_file)[1])[0]
                     md_text = get_tag_from_path(md_text, file_bundle, import_path, False)                    
                     x_create = 'bear://x-callback-url/create?show_window=no' 
                     bear_x_callback(x_create, md_text, md_file)
