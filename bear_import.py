@@ -111,7 +111,7 @@ def import_external_files():
                             title = os.path.splitext(os.path.split(md_file)[1])[0]
                     md_text = get_tag_from_path(md_text, file_bundle, import_path, False)                    
                     x_create = 'bear://x-callback-url/create?show_window=no' 
-                    bear_x_callback(x_create, md_text, title)
+                    bear_x_callback(x_create, md_text, md_file)
                     move_import_to_done(file_bundle, import_path, import_done)
                 write_log('Imported to Bear: ', file_bundle)
                 count += 1
@@ -178,9 +178,8 @@ def get_file_tags(file_bundle):
         return []
 
 
-def bear_x_callback(x_command, md_text, title):
-    if title != '' and not title.startswith("#"):
-        md_text = '# ' + title + '\n' + md_text
+def bear_x_callback(x_command, md_text, file_name):
+    md_text = insert_heading(file_name, md_text)
     x_command_text = x_command + '&text=' + urllib.parse.quote(md_text)
     subprocess.call(["open", x_command_text])
     time.sleep(.2)
@@ -212,6 +211,35 @@ def write_log(message, file_bundle):
         with open(log_file, 'a', encoding='utf-8') as f:
             f.write(time_stamp + ': ' + message + file_path +'\n')
 
+
+def insert_heading(file_path, file_content):
+    file_based_header = os.path.splitext(os.path.basename(file_path))[0]
+
+    # check if there is yaml frontmatter in first line
+    lines = file_content.split('\n')
+    has_frontmatter = "---" in lines[0]
+
+    # check if there is a h1 already in the file
+    has_header = re.search(r'^# \w+', file_content, re.MULTILINE)
+
+    # no header and no frontmatter
+    if not has_header and not has_frontmatter:
+        # add header from filename
+        file_content = "# " + file_based_header + "\n\n" + file_content
+        return file_content
+
+    # no header but frontmatter
+    if not has_header and has_frontmatter:
+        for index, line in enumerate(lines):
+            # find end of frontmatter
+            if line == '---' and index != 0:
+                # insert header
+                lines.insert(index + 1, '\n# ' + file_based_header)
+                break
+
+        file_content = '\n'.join(lines)
+        return file_content
+    return file_content
 
 def write_file(filename, file_content, modified):
     with open(filename, "w", encoding='utf-8') as f:
