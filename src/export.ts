@@ -33,17 +33,17 @@ const notesToExport = getNotesWithoutExcludeTags(
 
 const { amtWritten, notes: updatedNotes } = copyUsedBearAssets(notesToExport);
 console.log("Images written:", amtWritten);
-await writeNotes();
+await writeNotes(updatedNotes);
 
-async function writeNotes() {
+async function writeNotes(notes: MappedNote[]) {
   const barNotes = new cliProgress.SingleBar(
     {},
     cliProgress.Presets.shades_classic,
   );
 
-  barNotes.start(updatedNotes.length, 0);
+  barNotes.start(notes.length, 0);
   console.time("Written Notes");
-  for await (const el of updatedNotes) {
+  for await (const el of notes) {
     const notePath = path.join(EXPORT_DIR, el.folder, `${el.title}.md`);
     try {
       await Bun.write(notePath, el.content);
