@@ -1,0 +1,20 @@
+{
+  "name": "bear-markdown-export",
+  "module": "./src/export.ts",
+  "type": "module",
+  "scripts": {
+    "dev": "bun run export",
+    "export": "bun run ./src/export.ts"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "@types/cli-progress": "^3.11.5",
+    "cli-progress": "^3.12.0",
+    "yaml": "^2.4.0"
+  }
+}
