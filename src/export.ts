@@ -11,7 +11,7 @@ const EXPORT_DIR_IMAGES = path.join("00 Meta", "Attachments");
 
 const options = {
   excludeTags: ["blog", "draft"],
-  rootFolders: [
+  tagsTreatedAsFolders: [
     "00 meta",
     "10 journals",
     "30 external",
@@ -119,7 +119,9 @@ function getNotesWithoutExcludeTags(
 }
 
 function mapNotes(notes: BearNote[]): MappedNote[] {
-  const { rootFolders } = options;
+  const rootFolders = options.tagsTreatedAsFolders.map((el) =>
+    el.toLowerCase(),
+  );
 
   const regTags = /\#([.\w\/\-]+)[ \n]?(?!([\/ \w]+\w[#]))/g;
   const regFolderTags = /\#(\d{2}.+?)\#/g;
