@@ -128,7 +128,15 @@ function mapNotes(notes: BearNote[]): MappedNote[] {
     if (folders.length > 1) {
       console.warn("Too many folders in", el.ZTITLE, ":", folders);
     }
-    const folder = folders?.length ? folders[0].replace(/\\/g, "") : "";
+    const folder = folders?.length ? folders[0] : "";
+    if (folder) {
+      let contentWithoutFolderTag = el.ZTEXT.replaceAll(
+        `\n#${folders[0]}#\n`,
+        "",
+      );
+      contentWithoutFolderTag = el.ZTEXT.replaceAll(`#${folders[0]}#`, "");
+      el.ZTEXT = contentWithoutFolderTag;
+    }
 
     if (!el.ZTITLE) {
       console.warn("No title in", el.ZTEXT);
