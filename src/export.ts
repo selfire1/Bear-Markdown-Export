@@ -30,29 +30,31 @@ const notesToExport = getNotesWithoutExcludeTags(
   mappedNotes,
   options.tags.exclude,
 );
-// copy bear assets over
+
 const { amtWritten, notes: updatedNotes } = copyUsedBearAssets(notesToExport);
 console.log("Images written:", amtWritten);
+await writeNotes();
 
-// write notes
-const barNotes = new cliProgress.SingleBar(
-  {},
-  cliProgress.Presets.shades_classic,
-);
+async function writeNotes() {
+  const barNotes = new cliProgress.SingleBar(
+    {},
+    cliProgress.Presets.shades_classic,
+  );
 
-barNotes.start(updatedNotes.length, 0);
-console.time("Written Notes");
-for await (const el of updatedNotes) {
-  const notePath = path.join(EXPORT_DIR, el.folder, `${el.title}.md`);
-  try {
-    await Bun.write(notePath, el.content);
-    barNotes.increment();
-  } catch (e) {
-    console.warn("Error writing", el.title, e);
+  barNotes.start(updatedNotes.length, 0);
+  console.time("Written Notes");
+  for await (const el of updatedNotes) {
+    const notePath = path.join(EXPORT_DIR, el.folder, `${el.title}.md`);
+    try {
+      await Bun.write(notePath, el.content);
+      barNotes.increment();
+    } catch (e) {
+      console.warn("Error writing", el.title, e);
+    }
   }
+  barNotes.stop();
+  console.timeEnd("Written Notes");
 }
-barNotes.stop();
-console.timeEnd("Written Notes");
 
 function copyUsedBearAssets(notes: MappedNote[]) {
   let assetsWritten: string[] = [];
