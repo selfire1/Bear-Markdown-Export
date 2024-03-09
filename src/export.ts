@@ -4,22 +4,12 @@ import path from "path";
 import os from "os";
 import fs from "fs";
 import cliProgress from "cli-progress";
+import getOptions from "./options";
 
 const home = os.homedir();
-const EXPORT_DIR = path.join(home, "Desktop", "BearExport");
-const EXPORT_DIR_IMAGES = path.join("00 Meta", "Attachments");
-
-const options = {
-  excludeTags: ["blog", "draft"],
-  tagsTreatedAsFolders: [
-    "00 meta",
-    "10 journals",
-    "30 external",
-    "40 d&d",
-    "50 slipbox",
-    "60 outputs",
-  ],
-};
+const options = getOptions();
+const EXPORT_DIR = path.join(home, options.exportDir.notes);
+const EXPORT_DIR_IMAGES = path.join(EXPORT_DIR, options.exportDir.images);
 
 const BEAR_DB_PATH = path.join(
   os.homedir(),
@@ -30,8 +20,6 @@ const BEAR_ASSETS_PATH = path.join(
   "/Library/Group Containers/9K33E3U3T4.net.shinyfrog.bear/Application Data/Local Files/Note Images",
 );
 
-const exportImagesFullPath = path.join(EXPORT_DIR, EXPORT_DIR_IMAGES);
-
 clearDirectories([EXPORT_DIR]);
 
 const { notes, assets } = getNotesAndAssetsFromDb();
@@ -40,7 +28,7 @@ const assetMap = getAssetMap(assets);
 const mappedNotes = mapNotes(notes);
 const notesToExport = getNotesWithoutExcludeTags(
   mappedNotes,
-  options.excludeTags,
+  options.tags.exclude,
 );
 // copy bear assets over
 const { amtWritten, notes: updatedNotes } = copyUsedBearAssets(notesToExport);
@@ -91,7 +79,7 @@ function copyUsedBearAssets(notes: MappedNote[]) {
         );
       }
 
-      const newImgPath = path.join(exportImagesFullPath, imageName);
+      const newImgPath = path.join(EXPORT_DIR_IMAGES, imageName);
       assetsWritten.push(imageName);
 
       // copy files
@@ -119,9 +107,7 @@ function getNotesWithoutExcludeTags(
 }
 
 function mapNotes(notes: BearNote[]): MappedNote[] {
-  const rootFolders = options.tagsTreatedAsFolders.map((el) =>
-    el.toLowerCase(),
-  );
+  const rootFolders = options.tags.treatAsFolders.map((el) => el.toLowerCase());
 
   const regTags = /\#([.\w\/\-]+)[ \n]?(?!([\/ \w]+\w[#]))/g;
   const regFolderTags = /\#(\d{2}.+?)\#/g;
