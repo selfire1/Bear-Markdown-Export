@@ -31,9 +31,9 @@ const notesToExport = getNotesWithoutExcludeTags(
   options.tags.exclude,
 );
 
-// const { amtWritten, notes: updatedNotes } = copyUsedBearAssets(notesToExport);
-// console.log("Images written:", amtWritten);
-// await writeNotes(updatedNotes);
+const { amtWritten, notes: updatedNotes } = copyUsedBearAssets(notesToExport);
+console.log("Images written:", amtWritten);
+await writeNotes(updatedNotes);
 
 async function writeNotes(notes: MappedNote[]) {
   const barNotes = new cliProgress.SingleBar(
