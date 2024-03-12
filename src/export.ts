@@ -33,7 +33,7 @@ const notesToExport = getNotesWithoutExcludeTags(
 
 const { amtWritten, notes: updatedNotes } = copyUsedBearAssets(notesToExport);
 console.log("Images written:", amtWritten);
-await writeNotes(updatedNotes);
+// await writeNotes(updatedNotes);
 
 async function writeNotes(notes: MappedNote[]) {
   const barNotes = new cliProgress.SingleBar(
@@ -59,7 +59,8 @@ async function writeNotes(notes: MappedNote[]) {
 function copyUsedBearAssets(notes: MappedNote[]) {
   let assetsWritten: string[] = [];
   notes.forEach(async (el) => {
-    if (!assetMap.has(el.id)) {
+    const isPublished = el.content.includes("publish: true");
+    if (!assetMap.has(el.id) || !isPublished) {
       return;
     }
     const bearAssets = assetMap.get(el.id);
