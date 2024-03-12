@@ -2,8 +2,11 @@ import path from "path";
 
 export default function getOptions() {
   return {
+    quartz: {
+      indexTitle: "Garden index",
+    },
     exportDir: {
-      notes: path.join("Desktop", "BearExport"),
+      notes: path.join("repos", "quartz", "content"),
       images: path.join("00 Meta", "02 Attachments"),
     },
     tags: {
