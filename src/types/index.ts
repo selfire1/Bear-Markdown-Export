@@ -2,6 +2,8 @@ export type BearNote = {
   ZTEXT: string;
   Z_PK: number;
   ZTITLE: string;
+  ZCREATIONDATE: string;
+  ZMODIFICATIONDATE: string;
 };
 
 export type BearAsset = {
@@ -16,4 +18,8 @@ export type MappedNote = {
   tags: string[];
   id: number;
   folder: string;
+  date: {
+    created: string;
+    modified: string;
+  };
 };

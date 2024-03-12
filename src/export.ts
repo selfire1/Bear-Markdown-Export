@@ -26,14 +26,15 @@ const { notes, assets } = getNotesAndAssetsFromDb();
 const assetMap = getAssetMap(assets);
 
 const mappedNotes = mapNotes(notes);
+console.log(mappedNotes);
 const notesToExport = getNotesWithoutExcludeTags(
   mappedNotes,
   options.tags.exclude,
 );
 
-const { amtWritten, notes: updatedNotes } = copyUsedBearAssets(notesToExport);
-console.log("Images written:", amtWritten);
-await writeNotes(updatedNotes);
+// const { amtWritten, notes: updatedNotes } = copyUsedBearAssets(notesToExport);
+// console.log("Images written:", amtWritten);
+// await writeNotes(updatedNotes);
 
 async function writeNotes(notes: MappedNote[]) {
   const barNotes = new cliProgress.SingleBar(
@@ -152,6 +153,10 @@ function mapNotes(notes: BearNote[]): MappedNote[] {
       tags: [...el.ZTEXT.matchAll(regTags)].map((el) => el[1]),
       id: el.Z_PK,
       folder,
+      date: {
+        created: el.ZCREATIONDATE,
+        modified: el.ZMODIFICATIONDATE,
+      },
     };
   });
   return allNotes;
@@ -190,7 +195,7 @@ function getNotesAndAssetsFromDb(): { notes: BearNote[]; assets: BearAsset[] } {
 
   const query = db.query(
     // query from https://github.com/andymatuschak/Bear-Markdown-Export/tree/master
-    "SELECT Z_PK, ZTEXT, ZTITLE FROM `ZSFNOTE` WHERE `ZTRASHED` LIKE '0' AND `ZARCHIVED` LIKE '0'",
+    "SELECT Z_PK, ZTEXT, ZTITLE, ZCREATIONDATE, ZMODIFICATIONDATE FROM `ZSFNOTE` WHERE `ZTRASHED` LIKE '0' AND `ZARCHIVED` LIKE '0'",
   );
   const result = query.all() as BearNote[];
   // Get assets
