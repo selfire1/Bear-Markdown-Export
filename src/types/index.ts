@@ -23,3 +23,19 @@ export type MappedNote = {
     modified: Date;
   };
 };
+
+export type Options = {
+  quartz: {
+    indexTitle: string;
+    onlyWritePublishedAssets: boolean;
+  };
+  dryRun: boolean;
+  exportDir: {
+    notes: string;
+    images: string;
+  };
+  tags: {
+    exclude: string[];
+    treatAsFolders: string[];
+  };
+};

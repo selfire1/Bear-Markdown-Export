@@ -66,7 +66,9 @@ async function writeNotes(notes: MappedNote[]) {
 function copyUsedBearAssets(notes: MappedNote[]) {
   let assetsWritten: string[] = [];
   notes.forEach(async (el) => {
-    const isPublished = el.content.includes("publish: true");
+    const isPublished = options.quartz.onlyWritePublishedAssets
+      ? el.content.includes("publish: true")
+      : true;
     if (!assetMap.has(el.id) || !isPublished) {
       return;
     }
