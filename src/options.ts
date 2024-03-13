@@ -1,9 +1,11 @@
 import path from "path";
+import { Options } from "./types";
 
-export default function getOptions() {
+export default function getOptions(): Options {
   return {
     quartz: {
       indexTitle: "Garden index",
+      onlyWritePublishedAssets: true, // only write images mentioned in notes that have `publish: true`
     },
     dryRun: true,
     exportDir: {
