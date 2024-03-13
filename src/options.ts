@@ -5,6 +5,7 @@ export default function getOptions() {
     quartz: {
       indexTitle: "Garden index",
     },
+    dryRun: true,
     exportDir: {
       notes: path.join("repos", "quartz", "content"),
       images: path.join("00 Meta", "02 Attachments"),

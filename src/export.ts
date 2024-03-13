@@ -49,8 +49,11 @@ async function writeNotes(notes: MappedNote[]) {
         ? path.join(EXPORT_DIR, "index.md")
         : path.join(EXPORT_DIR, el.folder, `${el.title}.md`);
     try {
-      await Bun.write(notePath, el.content);
       barNotes.increment();
+      if (options.dryRun) {
+        return;
+      }
+      await Bun.write(notePath, el.content);
     } catch (e) {
       console.warn("Error writing", el.title, e);
     }
@@ -91,8 +94,11 @@ function copyUsedBearAssets(notes: MappedNote[]) {
       // copy files
       const file = Bun.file(bearAssetPath);
       try {
-        await Bun.write(newImgPath, file);
         assetsWritten.push(imageName);
+        if (options.dryRun) {
+          return;
+        }
+        await Bun.write(newImgPath, file);
       } catch (error) {
         console.error(error);
       }
