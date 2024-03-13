@@ -7,7 +7,7 @@ export default function getOptions(): Options {
       indexTitle: "Garden index",
       onlyWritePublishedAssets: true, // only write images mentioned in notes that have `publish: true`
     },
-    dryRun: true,
+    dryRun: false,
     exportDir: {
       notes: path.join("repos", "quartz", "content"),
       images: path.join("00 Meta", "02 Attachments"),
