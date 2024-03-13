@@ -26,7 +26,6 @@ const { notes, assets } = getNotesAndAssetsFromDb();
 const assetMap = getAssetMap(assets);
 
 const mappedNotes = mapNotes(notes);
-console.log(mappedNotes);
 const notesToExport = getNotesWithoutExcludeTags(
   mappedNotes,
   options.tags.exclude,
