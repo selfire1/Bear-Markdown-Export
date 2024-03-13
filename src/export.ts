@@ -32,7 +32,7 @@ const notesToExport = getNotesWithoutExcludeTags(
 );
 
 const { amtWritten, notes: updatedNotes } = copyUsedBearAssets(notesToExport);
-console.log("Images written:", amtWritten);
+console.info("Images written:", amtWritten);
 await writeNotes(updatedNotes);
 
 async function writeNotes(notes: MappedNote[]) {
@@ -127,7 +127,6 @@ function mapNotes(notes: BearNote[]): MappedNote[] {
     const folderMatches = [...el.ZTEXT.matchAll(regFolderTags)].map(
       (el) => el[1],
     );
-    // console.log(folderMatches);
     const folders = folderMatches.filter((match) =>
       rootFolders.some(
         (folder) =>
