@@ -26,6 +26,7 @@ const { notes, assets } = getNotesAndAssetsFromDb();
 const assetMap = getAssetMap(assets);
 
 const mappedNotes = mapNotes(notes);
+console.log(mappedNotes);
 const notesToExport = getNotesWithoutExcludeTags(
   mappedNotes,
   options.tags.exclude,
@@ -158,12 +159,21 @@ function mapNotes(notes: BearNote[]): MappedNote[] {
       id: el.Z_PK,
       folder,
       date: {
-        created: el.ZCREATIONDATE,
-        modified: el.ZMODIFICATIONDATE,
+        created: cocoaCoreDataTimestampToDate(el.ZCREATIONDATE),
+        modified: cocoaCoreDataTimestampToDate(el.ZMODIFICATIONDATE),
       },
     };
   });
   return allNotes;
+}
+
+function cocoaCoreDataTimestampToDate(timestamp: number) {
+  if (!timestamp) {
+    throw new Error("No timestamp");
+  }
+  const timestampInNanoSecondsEpoch = new Date(timestamp * 1000).getTime();
+  const epochOffset = new Date("2001-01-01 00:00:00 -0000").getTime();
+  return new Date(timestampInNanoSecondsEpoch + epochOffset);
 }
 
 function getAssetMap(assets) {
