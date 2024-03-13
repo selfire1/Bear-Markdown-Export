@@ -51,7 +51,7 @@ async function writeNotes(notes: MappedNote[]) {
     try {
       barNotes.increment();
       if (options.dryRun) {
-        return;
+        break;
       }
       await Bun.write(notePath, el.content);
     } catch (e) {
