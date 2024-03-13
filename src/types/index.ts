@@ -30,6 +30,7 @@ export type Options = {
     onlyWritePublishedAssets: boolean;
   };
   dryRun: boolean;
+  ignoreNotes: string[];
   exportDir: {
     notes: string;
     images: string;
