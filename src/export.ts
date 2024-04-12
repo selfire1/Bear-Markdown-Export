@@ -1,5 +1,6 @@
 import { Database } from "bun:sqlite";
 import type { BearNote, BearAsset, MappedNote } from "./types";
+import graymatter from "gray-matter";
 import path from "path";
 import os from "os";
 import fs from "fs";
@@ -167,6 +168,11 @@ function mapNotes(notes: BearNote[]): MappedNote[] {
     };
   });
   return allNotes;
+}
+
+function getFrontmatter(fileContent: string) {
+  const { data } = graymatter(fileContent);
+  return data;
 }
 
 function cocoaCoreDataTimestampToDate(timestamp: number) {
