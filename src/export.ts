@@ -146,12 +146,15 @@ function mapNotes(notes: BearNote[]): MappedNote[] {
   const regFolderTags = /\#(\d{2}.+?)\#/g;
 
   const allNotes = notes.reduce((acc: MappedNote[], current: BearNote) => {
-    const frontmatter = getFrontmatter(current.ZTEXT);
-    if (isPublishOnly && !frontmatter?.publish) {
+    const { frontmatter: noteFrontmatter, content: splitContent } =
+      getFrontmatterAndContent(current.ZTEXT);
+    if (isPublishOnly && !noteFrontmatter?.publish) {
       return acc;
     }
 
-    const folderMatches = [...current.ZTEXT.matchAll(regFolderTags)].map(
+    let bodyContent = splitContent;
+
+    const folderMatches = [...bodyContent.matchAll(regFolderTags)].map(
       (el) => el[1],
     );
     const folders = folderMatches.filter((match) =>
@@ -166,28 +169,38 @@ function mapNotes(notes: BearNote[]): MappedNote[] {
     }
     const folder = folders?.length ? folders[0] : "";
     if (folder) {
-      let contentWithoutFolderTag = current.ZTEXT.replaceAll(
+      let contentWithoutFolderTag = bodyContent.replaceAll(
         `\n#${folders[0]}#\n`,
         "",
       );
-      contentWithoutFolderTag = current.ZTEXT.replaceAll(`#${folders[0]}#`, "");
-      current.ZTEXT = contentWithoutFolderTag;
+      contentWithoutFolderTag = bodyContent.replaceAll(`#${folders[0]}#`, "");
+      bodyContent = contentWithoutFolderTag;
     }
 
     if (!current.ZTITLE) {
-      console.warn("No title in", current.ZTEXT, "id:", current.Z_PK);
+      console.warn("No title in", bodyContent, "id:", current.Z_PK);
     }
 
+    const date = {
+      created: cocoaCoreDataTimestampToDate(current.ZCREATIONDATE),
+      modified: cocoaCoreDataTimestampToDate(current.ZMODIFICATIONDATE),
+    };
+
+    const frontmatter = {
+      ...noteFrontmatter,
+      date: date.created,
+      lastmod: date.modified,
+    };
+
+    const content = graymatter.stringify(bodyContent, frontmatter);
+
     const note: MappedNote = {
-      content: current.ZTEXT,
+      content,
       title: current.ZTITLE,
       tags: [...current.ZTEXT.matchAll(regTags)].map((el) => el[1]),
       id: current.Z_PK,
       folder,
-      date: {
-        created: cocoaCoreDataTimestampToDate(current.ZCREATIONDATE),
-        modified: cocoaCoreDataTimestampToDate(current.ZMODIFICATIONDATE),
-      },
+      date,
       frontmatter,
     };
     acc.push(note);
@@ -196,9 +209,9 @@ function mapNotes(notes: BearNote[]): MappedNote[] {
   return allNotes;
 }
 
-function getFrontmatter(fileContent: string) {
-  const { data } = graymatter(fileContent);
-  return data;
+function getFrontmatterAndContent(fileContent: string) {
+  const { data: frontmatter, content } = graymatter(fileContent);
+  return { frontmatter: frontmatter, content };
 }
 
 function cocoaCoreDataTimestampToDate(timestamp: number) {
