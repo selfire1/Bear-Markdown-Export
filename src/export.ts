@@ -1,5 +1,6 @@
 import { Database } from "bun:sqlite";
 import type { BearNote, BearAsset, MappedNote } from "./types";
+import { getDynamicFiles } from "./dynamic-files";
 import graymatter from "gray-matter";
 import path from "path";
 import os from "os";
@@ -41,6 +42,17 @@ const notesToExport = getNotesWithoutExcludeTags(
 const { amtWritten, notes: updatedNotes } = copyUsedBearAssets(notesToExport);
 console.info("Images written:", amtWritten);
 await writeNotes(updatedNotes);
+
+console.log("Writing dynamic files");
+
+await writeQueryFiles();
+
+async function writeQueryFiles() {
+  const dynamicFiles = getDynamicFiles(updatedNotes);
+  for await (const el of dynamicFiles) {
+    await el.writeFile();
+  }
+}
 
 async function writeNotes(notes: MappedNote[]) {
   const barNotes = new cliProgress.SingleBar(

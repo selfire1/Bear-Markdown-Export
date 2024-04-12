@@ -18,6 +18,7 @@ export type MappedNote = {
   tags: string[];
   id: number;
   folder: string;
+  frontmatter: Record<string, any>;
   date: {
     created: Date;
     modified: Date;

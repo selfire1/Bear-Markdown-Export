@@ -7,7 +7,9 @@
     "export": "bun run ./src/export.ts"
   },
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "dayjs": "^1.11.10",
+    "gray-matter": "^4.0.3"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
@@ -15,6 +17,7 @@
   "dependencies": {
     "@types/cli-progress": "^3.11.5",
     "cli-progress": "^3.12.0",
+    "daysjs": "^1.0.2",
     "yaml": "^2.4.0"
   }
 }
