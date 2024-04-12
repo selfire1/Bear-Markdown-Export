@@ -21,6 +21,12 @@ const BEAR_ASSETS_PATH = path.join(
   "/Library/Group Containers/9K33E3U3T4.net.shinyfrog.bear/Application Data/Local Files/Note Images",
 );
 
+const args = process.argv;
+const isPublishOnly = args.includes("--publish-only");
+console.log("--- config ---");
+console.log("publish only:", isPublishOnly);
+console.log("--------------");
+
 clearDirectories([EXPORT_DIR]);
 
 const { notes, assets } = getNotesAndAssetsFromDb();
