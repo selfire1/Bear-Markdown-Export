@@ -51,14 +51,14 @@ async function writeNotes(notes: MappedNote[]) {
   barNotes.start(notes.length, 0);
   console.time("Written Notes");
   for await (const el of notes) {
-    const isNoteIgnored = options.ignoreNotes.includes(el.title);
+    const isNoteInOptionsIgnored = options.ignoreNotes.includes(el.title);
     const notePath =
       el.title === options.quartz.indexTitle
         ? path.join(EXPORT_DIR, "index.md")
         : path.join(EXPORT_DIR, el.folder, `${el.title}.md`);
     try {
       barNotes.increment();
-      if (options.dryRun || isNoteIgnored) {
+      if ([options.dryRun, isNoteInOptionsIgnored].some(Boolean)) {
         continue;
       }
       await Bun.write(notePath, el.content);
