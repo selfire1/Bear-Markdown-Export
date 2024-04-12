@@ -149,6 +149,60 @@ export const getDynamicFiles = (notes: MappedNote[]) => {
     notes,
   );
 
+  const booksRecentlyRead = new DynamicFile(
+    {
+      templater: (notes: MappedNote[]) => {
+        const headers = "| Cover | Title | Read |";
+        const separator =
+          "| :--------------- | :------------------ | :------------------: |";
+        const rows = notes.map((el) => {
+          return (
+            "| " +
+            [
+              el.frontmatter?.thumbnail
+                ? `![thumb\\|50](${el.frontmatter?.thumbnail})`
+                : "",
+              "[[" + el.title + "]]",
+              getDateString(el.frontmatter?.read),
+            ].join(" | ") +
+            " |"
+          );
+        });
+        const rowIfEmpty = "| | |";
+        const tableBody = [
+          headers,
+          separator,
+          ...(rows?.length ? rows : [rowIfEmpty]),
+        ].join("\n");
+        return tableBody;
+      },
+      filter: (notes: MappedNote[]) => {
+        const filtered = notes.filter((el) =>
+          [
+            el.folder.startsWith(BOOK_FOLDER),
+            el.frontmatter.publish,
+            el.frontmatter?.read,
+          ].every(Boolean),
+        );
+        return filtered;
+      },
+      sorter: (notes: MappedNote[]) => {
+        return notes
+          .sort((a, b) => {
+            return (
+              new Date(b.frontmatter?.read).valueOf() -
+              new Date(a.frontmatter?.read).valueOf()
+            );
+          })
+          .slice(0, 5);
+      },
+      filePath: "60 Outputs/Recently read",
+      permalink: "uktgERNWudD3eZ4fcwdUry",
+      body: "# Recently read",
+    },
+    notes,
+  );
+
   const notesRecentlyEdited = new DynamicFile(
     {
       templater: (notes: MappedNote[]) => {
@@ -231,5 +285,11 @@ export const getDynamicFiles = (notes: MappedNote[]) => {
     notes,
   );
 
-  return [booksRead, booksReading, notesRecentlyEdited, notesRecentlyCreated];
+  return [
+    booksRead,
+    booksReading,
+    booksRecentlyRead,
+    notesRecentlyEdited,
+    notesRecentlyCreated,
+  ];
 };
