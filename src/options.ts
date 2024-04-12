@@ -10,8 +10,7 @@ export default function getOptions(): Options {
     ignoreNotes: ["Publish note to keep tag"],
     dryRun: false,
     exportDir: {
-      // notes: path.join("repos", "quartz", "content"),
-      notes: path.join("Desktop", "BearExport"),
+      notes: path.join("repos", "quartz", "content"),
       images: path.join("00 Meta", "02 Attachments"),
     },
     tags: {
