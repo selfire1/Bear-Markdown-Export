@@ -130,11 +130,16 @@ function getNotesWithoutExcludeTags(
 
 function mapNotes(notes: BearNote[]): MappedNote[] {
   const rootFolders = options.tags.treatAsFolders.map((el) => el.toLowerCase());
-
   const regTags = /\#([.\w\/\-]+)[ \n]?(?!([\/ \w]+\w[#]))/g;
   const regFolderTags = /\#(\d{2}.+?)\#/g;
-  const allNotes = notes.map((el) => {
-    const folderMatches = [...el.ZTEXT.matchAll(regFolderTags)].map(
+
+  const allNotes = notes.reduce((acc: MappedNote[], current: BearNote) => {
+    const frontmatter = getFrontmatter(current.ZTEXT);
+    if (isPublishOnly && !frontmatter?.publish) {
+      return acc;
+    }
+
+    const folderMatches = [...current.ZTEXT.matchAll(regFolderTags)].map(
       (el) => el[1],
     );
     const folders = folderMatches.filter((match) =>
@@ -145,34 +150,37 @@ function mapNotes(notes: BearNote[]): MappedNote[] {
       ),
     );
     if (folders.length > 1) {
-      console.warn("Too many folders in", el.ZTITLE, ":", folders);
+      console.warn("Too many folders in", current.ZTITLE, ":", folders);
     }
     const folder = folders?.length ? folders[0] : "";
     if (folder) {
-      let contentWithoutFolderTag = el.ZTEXT.replaceAll(
+      let contentWithoutFolderTag = current.ZTEXT.replaceAll(
         `\n#${folders[0]}#\n`,
         "",
       );
-      contentWithoutFolderTag = el.ZTEXT.replaceAll(`#${folders[0]}#`, "");
-      el.ZTEXT = contentWithoutFolderTag;
+      contentWithoutFolderTag = current.ZTEXT.replaceAll(`#${folders[0]}#`, "");
+      current.ZTEXT = contentWithoutFolderTag;
     }
 
-    if (!el.ZTITLE) {
-      console.warn("No title in", el.ZTEXT);
+    if (!current.ZTITLE) {
+      console.warn("No title in", current.ZTEXT, "id:", current.Z_PK);
     }
 
-    return {
-      content: el.ZTEXT,
-      title: el.ZTITLE,
-      tags: [...el.ZTEXT.matchAll(regTags)].map((el) => el[1]),
-      id: el.Z_PK,
+    const note: MappedNote = {
+      content: current.ZTEXT,
+      title: current.ZTITLE,
+      tags: [...current.ZTEXT.matchAll(regTags)].map((el) => el[1]),
+      id: current.Z_PK,
       folder,
       date: {
-        created: cocoaCoreDataTimestampToDate(el.ZCREATIONDATE),
-        modified: cocoaCoreDataTimestampToDate(el.ZMODIFICATIONDATE),
+        created: cocoaCoreDataTimestampToDate(current.ZCREATIONDATE),
+        modified: cocoaCoreDataTimestampToDate(current.ZMODIFICATIONDATE),
       },
+      frontmatter,
     };
-  });
+    acc.push(note);
+    return acc;
+  }, [] as MappedNote[]);
   return allNotes;
 }
 
